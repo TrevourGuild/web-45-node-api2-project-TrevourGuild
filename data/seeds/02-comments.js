@@ -14,7 +14,7 @@ exports.seed = function(knex, Promise) {
         {text: "She acts without expectation, succeeds without taking credit and doesn't think she is better than anyone else.", post_id: 7 },
         {text: "Act without doing; work without effort.", post_id: 7 },
         {text: "Do you have the patience to wait until your mud settles and the water is clear? Can you remain unmoving until the right action arises by itself?", post_id: 8 },
-        {text: "He who tries to shine dims his own light. He who defines himself can't know who he really is. He who clings to his work will do nothing that endures. Just do your job, then let go.", post_id: 8 }
+        {text: "He who tries to shine dims his own light. He who defines himself can't know who he really is. He who clings to his work will do nothing that endures. Just do your job, then let go.", post_id: 9 }
       ]);
     });
 };

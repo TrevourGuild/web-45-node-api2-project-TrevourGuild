@@ -36,20 +36,101 @@ router.get('/:id', (req, res) =>{
 })
 
 router.post('/', (req, res) =>{
-    Post.insert(req.body)
-    .then(post => {
-        if(!post){
-            res.status(400).json({ message: 'missing title or contents'})
-        }else{
-            res.status(201).json(post)
-        }
+    const {title ,contents} = req.body
+    if(!title || !contents){
+        res.status(400).json({ 
+        message: 'Please provide title and contents for the post'
     })
-    .catch(error => {
-        console.log(error);
+    }else{
+        Post.insert({title, contents})
+        .then(({ id }) => {
+           return Post.findById(id)
+        })
+        .then(post =>{
+            res.status(201).json(post)
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({
+              message: 'Error recieving the post',
+            });
+          });
+    }
+   
+})
+
+router.put('/:id', (req, res) =>{
+    const {title, contents} =req.body
+    if(!title || !contents){
+        res.status(400).json({ 
+        message: 'Please provide title and contents for the post'
+    })
+    } else{
+        Post.findById(req.params.id)
+        .then(stuff =>{
+            if(!stuff){
+                res.status(404).json({
+                    message: 'The post with the specified ID does not exist'
+                })
+            }else{
+                return Post.update(req.params.id, req.body)
+            }
+        })
+        .then(data =>{
+            if(data){
+                return Post.findById(req.params.id)
+            }
+        })
+        .then(post =>{
+            if (post){
+                res.json(post)
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({
+              message: 'Error recieving the post',
+            });
+          });
+    }
+})
+
+router.delete('/:id', async (req, res) =>{
+    try{
+        const post = await Post.findById(req.params.id)
+        if(!post) {
+            res.status(404).json({
+                message: 'the post with the specified ID does not exist'
+            })
+        }else{
+            await Post.remove(req.params.id)
+            res.json(post)
+        }
+    }catch (err){
         res.status(500).json({
-          message: 'Error recieving the post',
-        });
-      });
+            message: 'the post could not be recieved',
+            err: err.message
+        })
+    }
+})
+
+router.get('/:id/comments', async (req,res) =>{
+    try{
+        const post = await Post.findById(req.params.id)
+        if(!post){
+            res.status(404).json({
+                message: 'the post with the specified ID does not exist'
+            })
+        }else{
+            const messages = await Post.findPostComments(req.params.id)
+            res.json(messages)
+        }
+    }catch (err){
+        res.status(500).json({
+            message: 'the comments information could not be retrieved',
+            err: err.message
+        })
+    }
 })
 
 module.exports = router
